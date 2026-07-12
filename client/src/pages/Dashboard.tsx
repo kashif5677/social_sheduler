@@ -2,10 +2,16 @@ import {
   ActivityIcon,
   CheckCircleIcon,
   ClockIcon,
+  SendIcon,
   Share2Icon,
   TrendingUpIcon,
 } from "lucide-react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import {
+  dummyAccountsData,
+  dummyActivityData,
+  dummyPostsData,
+} from "../assets/assets";
 
 function Dashboard() {
   const [stats, setStats] = useState({
@@ -15,6 +21,30 @@ function Dashboard() {
   });
 
   const [activities, setActivities] = useState<any>([]);
+
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const [postsRes, accountsRes, activityRes] = [
+          { data: dummyPostsData },
+          { data: dummyAccountsData },
+          { data: dummyActivityData },
+        ];
+        const posts = postsRes.data;
+        setStats({
+          scheduled: posts.filter((p: any) => p.status === "scheduled").length,
+          published: posts.filter((p: any) => p.status === "published").length,
+          connectedAccounts: accountsRes.data.filter(
+            (a: any) => a.status === "connected",
+          ).length,
+        });
+        setActivities(activityRes.data);
+      } catch (error: any) {
+        console.error("Error fetching dashboard data", error);
+      }
+    };
+    fetchDashboardData();
+  }, []);
 
   const statCards = [
     {
@@ -76,15 +106,41 @@ function Dashboard() {
         </div>
 
         {activities.length === 0 ? (
-          <div>
+          <div className="flex flex-col items-center justify-center py-16 px-6">
             <div className="size-12 bg-slate-100 rounded-xl flex items-center justify-center mb-3">
               <ActivityIcon className="size-6 text-slate-400" />
             </div>
-            <p>No activity yet</p>
-            <p></p>
+            <p className="text-slate-500">No activity yet</p>
+            <p className="text-slate-400 text-sm mt-1">
+              Connect accounts and schedule posts to see events here.
+            </p>
           </div>
         ) : (
-          <div></div>
+          <div className="divide-y divide-slate-50">
+            {activities.map((activity) => (
+              <div
+                key={activity._id}
+                className="flex items-start gap-4 px-6 py-4 hover:bg-slate-50/50 transition-colors"
+              >
+                <div className="size-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 bg-zinc-100 text-zinc-600">
+                  <SendIcon className="size-4" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2 mb-1">
+                    <span className="text-xs px-2 py-0.5 rounded-full bg-zinc-1000 text-zinc-600">
+                      Published
+                    </span>
+                    <span className="text-xs text-slate-400 shrink-0">
+                      {new Date(activity.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <p className="text-sm text-slate-600">
+                    {activity.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         )}
       </div>
     </div>
