@@ -229,7 +229,7 @@ const Scheduler = () => {
                     <div className="flex items-center gap-2">
                       {post.mediaType && (
                         <span className="text-xs bg-slate-100 text-slate-600 border-slate-200 px-1.5 py-0.5 rounded-md font-semibold capitalize">
-                          {/* {post.mediaType} */}
+                          {post.mediaType}
                         </span>
                       )}
                       <span>
@@ -237,7 +237,9 @@ const Scheduler = () => {
                       </span>
                     </div>
                   </div>
-                  <p className="text-sm text-slate-500 line-clamp-2 max-w-md">{post.content}</p>
+                  <p className="text-sm text-slate-500 line-clamp-2 max-w-md">
+                    {post.content}
+                  </p>
                 </div>
               ))
             )}
